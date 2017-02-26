@@ -1,0 +1,237 @@
+.clearf {
+  clear: both;
+}
+.clearf:after,
+.clearf:before {
+  content: " ";
+  display: table;
+  clear: both;
+}
+.sizing-border {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+}
+.sizing-content {
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -o-box-sizing: content-box;
+}
+.display_flex {
+  display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -o-flex;
+}
+#_player_box {
+  height: 60px;
+  background: #666666;
+  color: #fff;
+  position: fixed;
+  bottom: -60px;
+  left: 0;
+  width: 100%;
+  transition: all ease-in-out 0.3s;
+  -moz-transition: all ease-in-out 0.3s;
+  -webkit-transition: all ease-in-out 0.3s;
+  -o-transition: all ease-in-out 0.3s;
+}
+#_player_box .close {
+  position: absolute;
+  top: -24px;
+  right: 0px;
+  font-size: 0.7rem;
+  line-height: 0.7rem;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  opacity: 1;
+  padding: 0 6px;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -o-border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+#_player_box .close i {
+  font-size: 18px;
+  font-weight: 600;
+}
+#_player_box .close:hover {
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+}
+#_player_box.pl_show {
+  bottom: 0;
+}
+._player_bar {
+  width: 800px;
+  max-width: 100%;
+  position: relative;
+  margin: 5px auto;
+  background: #333333;
+  border: 1px solid #666666;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -o-border-radius: 3px;
+  height: 50px;
+  clear: both;
+}
+._player_bar ._progress_bar {
+  height: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  position: relative;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+._player_bar ._progress_bar ._progress {
+  height: 3px;
+  background: #00ccff;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  transition: all linear 0.3s;
+  -moz-transition: all linear 0.3s;
+  -webkit-transition: all linear 0.3s;
+  -o-transition: all linear 0.3s;
+}
+._player_bar ._progress_bar ._progress_node {
+  width: 10px;
+  height: 10px;
+  background: #00ccff;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -o-border-radius: 50%;
+  position: absolute;
+  right: -5px;
+  top: -3.5px;
+}
+._player_bar:after,
+._player_bar:before {
+  content: " ";
+  display: table;
+  clear: both;
+}
+._pl_layer {
+  height: 42px;
+}
+._btn_controls {
+  padding: 5px;
+  display: inline-block;
+}
+._btn_controls span,
+._btn_controls a {
+  display: inline-block;
+  padding: 3px;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  line-height: 18px;
+  cursor: pointer;
+}
+._btn_controls ._prev {
+  width: 18px;
+}
+._time {
+  display: inline-block;
+  padding: 5px;
+  margin: 0 10px;
+}
+._pl_title {
+  display: inline-block;
+  padding: 5px;
+  margin: 0 5px;
+  max-width: 45%;
+}
+._volume {
+  display: inline-block;
+  padding: 5px;
+  margin: 0 5px 0 10px;
+  float: right;
+}
+._volume span {
+  display: inline-block;
+}
+._volume ._vl_icon {
+  margin-right: 5px;
+}
+._volume_bar {
+  width: 100px;
+  height: 3px;
+  background: #cccccc;
+  position: relative;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  margin-bottom: 4px;
+}
+._volume_bar ._volume_stt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  background: #0066cc;
+}
+._volume_bar ._volume_node {
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -o-border-radius: 50%;
+  border: 1px solid #ddd;
+  position: absolute;
+  right: -5px;
+  top: -3.5px;
+}
+.list-items {
+  list-style: none;
+  padding: 0;
+}
+.list-items li a {
+  color: rgba(0, 0, 0, 0.7);
+}
+.list-items .active a,
+.list-items li a:hover {
+  color: #54a4dc;
+}
+@media screen and (max-width: 768px) {
+  ._pl_title {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    max-width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    margin: 0;
+    padding: 5px 10px 10px;
+  }
+}
+@media screen and (max-width: 450px) {
+  ._time {
+    margin: 0;
+  }
+  ._volume {
+    margin-left: 0;
+  }
+  ._volume_bar {
+    width: 70px;
+  }
+}

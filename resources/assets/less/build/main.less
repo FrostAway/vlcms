@@ -1,0 +1,147 @@
+@import "../mixins.less";
+
+.hidden{
+    display: none;
+}
+body, html{
+    background: @body_bg;
+}
+a{
+    &:hover, &:active, &:focus{
+        outline: none; text-decoration: none;
+    }
+}
+.hidden{display: none!important;}
+#_main_bar{
+    background: @bar_bg; margin-bottom: @mgb;
+    ul{
+        li{
+            a{
+                color: @bar_cl;
+                &:hover{
+                    color: @bar_hv;
+                }
+            }
+        }
+    }
+    .dropdown-menu{
+        top: calc(~"100% + 6px");
+        background: #fff; .border-radius(0); right: 0; left: auto;
+        a{
+            color: @text_cl;
+            &:hover{background: transparent; color: @bar_hv;}
+        }
+        span{display: inline-block; min-width: 20px; margin-right: 3px; text-align: center;}
+        &:after{
+            content: ""; width: 10px; height: 10px; border-left: 1px solid @bd_cl; border-top: 1px solid @bd_cl; background: #fff;
+            .transform(translateY(-50%) rotate(45deg)); position: absolute; top: -1px; right: 10%;
+        }
+    }
+    .dropdown.open {
+        a.dropdown-toggle i{color: @open_cl;}
+    }
+    ._nav_account{
+        margin-left: 25/16rem;
+        li {
+            a.dropdown-toggle{
+                i {
+                    color: @bar_hv;
+                }
+                &:after{display: none;}
+            }
+        }
+    }
+}
+#_logo{max-width: 100%; max-height: @bar_ih;}
+._search_form{
+    position: relative; 
+    button{
+        position: absolute; top: 0px; right: 0; border: none; background: transparent;
+        &:hover, &:active, &:focus, &:visited{
+            background: transparent; color: @text_cl; opacity: 0.8; outline: none;
+        }
+    }
+}
+._img_box{
+    position: relative;
+    span{display: inline-block; padding-left: 45px;}
+    img{max-height: 38px; max-width: 38px; position: absolute; top: 0px; left: 0;}
+}
+#main_body{
+    min-height: calc(~"100vh - 54px - 0.9375rem - 0.625rem - 80px");
+}
+._items{
+    ._title, ._title a{
+        font-size: 18/16rem; color: @title_cl; margin-bottom: 5/16rem;
+        &:hover{
+            color: @bar_hv;
+        }
+    }
+    ._item{
+        margin-bottom: 10/16rem;
+    }
+    ._date{margin-bottom: 8/16rem; font-size: 13/16rem; color: @bar_hv;}
+    ._thumb{
+        img{
+            margin-bottom: 10/16rem; &:hover{opacity: 0.7;}
+        }
+    }
+    ._item_excerpt{font-size: 14/16rem; margin-bottom: 7/16rem;}
+}
+._wrap_items{
+    ._item{
+        background: #fff; padding: 10/16rem; .border-radius(3px); border: 1px solid @bd_cl;
+    }
+}
+._item_footer{padding-top: 7/16rem; border-top: 1px solid @bd_cl;}
+._social_icon{
+    a{
+        margin-right: 3/16rem;
+        &:first-child{margin-right: 0;}
+        &:hover{opacity: 0.7;}
+    }
+    img{
+        width: @sicon_w;
+    }
+}
+._item_actions{
+    a{
+        color: @bar_hv; font-size: 13/16rem; margin-left: 8/16rem;
+        i{margin-right: 2/16rem;}
+    }
+    a.active, a:hover{
+        color: @open_cl;
+    }
+    &:last-child{margin-left: 0;}
+}
+._wrapper{
+    background: #fff; padding: 1rem; margin-bottom: 10/16rem; .border-radius(1px);
+}
+._box_title{
+    font-size: 17/16rem; margin: 0 0 10/16rem;
+}
+._table{
+    display: table; min-height: 300px; max-height: 100vh; width: 100%;
+    ._table_cell{
+        display: table-cell; vertical-align: middle;
+    }
+}
+
+._upload_btn{
+    input{display: none;}
+    padding: 8px 15px; background: @upload_cl; border: 1px solid @bd_cl; .border-radius(3px);
+    cursor: pointer; display: inline-block;
+}
+._upload_zone{
+    display: table; width: 100%; min-height: 300px; max-height: 100vh; text-align: center;
+    border: 2px dashed @bd_cl;
+    input[type="file"]{display: none;}
+    ._cell{
+        display: table-cell; vertical-align: middle;
+    }
+}
+.tab-pane{padding-top: 12/16rem; padding-bottom: 12/16rem;}
+
+#footer{
+    padding: 25/16rem 0; background: @ft_bg; border-top: 1px solid @bd_cl; margin-top: 10/16rem;
+}

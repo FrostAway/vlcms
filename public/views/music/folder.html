@@ -1,0 +1,17 @@
+<h3 ng-if="folderName"><% folderName %></h3>
+
+<ul class="list-unstyled list-items">
+    <div ng-repeat="item in childrens" class="item_if" data-type="folder">
+        <li ng-if="item.folder">
+            <a ui-sref="folder({id: item.id})"><i class="fa fa-folder"></i> <% item.name %> <span>(<% item.folder.childCount %>)</span></a>
+        </li>
+        <li ng-if="item.audio" data-type="audio">
+            <a href="javascript:void(0)" 
+               data-src="<% trustSrc(item['@content.downloadUrl']) %>" 
+               data-title="<% item.audio.title || item.name %>"
+               ng-click="playAudio(item, $event)">
+                <i class="fa fa-music"></i> <% item.audio.title || item.name %>
+            </a>
+        </li>
+    </div>
+</ul>
