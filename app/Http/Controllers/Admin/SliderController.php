@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
-use App\Eloquents\TaxEloquent;
+use App\Models\Tax;
 
 class SliderController extends Controller
 {
    protected $slider;
 
-    public function __construct(TaxEloquent $slider) {
+    public function __construct(Tax $slider) {
         canAccess('manage_cats');
 
         $this->slider = $slider;
@@ -20,7 +20,7 @@ class SliderController extends Controller
 
     public function index(Request $request) {
         $data = $request->all();
-        $sliders = $this->slider->all('slider', $data);
+        $sliders = $this->slider->getData('slider', $data);
         return view('manage.slider.index', ['items' => $sliders]);
     }
 
@@ -30,7 +30,7 @@ class SliderController extends Controller
 
     public function store(Request $request) {
         try {
-            $this->slider->insert($request->all(), 'slider');
+            $this->slider->insertData($request->all(), 'slider');
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -50,7 +50,7 @@ class SliderController extends Controller
 
     public function update($id, Request $request) {
         try {
-            $this->slider->update($id, $request->all());
+            $this->slider->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -65,6 +65,11 @@ class SliderController extends Controller
     }
 
     public function multiAction(Request $request) {
-        return response()->json($this->slider->actions($request));
+        try {
+            $this->slider->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }

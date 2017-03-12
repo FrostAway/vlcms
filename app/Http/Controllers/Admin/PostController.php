@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Eloquents\PostTypeEloquent;
-use App\Eloquents\TaxEloquent;
-use App\Eloquents\UserEloquent;
+use App\Models\PostType;
+use App\Models\Tax;
+use App\User;
 use App\Exceptions\DbException;
 use Illuminate\Validation\ValidationException;
 
@@ -16,27 +16,27 @@ class PostController extends Controller {
     protected $tax;
     protected $user;
 
-    public function __construct(PostTypeEloquent $post, TaxEloquent $tax, UserEloquent $user) {
+    public function __construct(PostType $post, Tax $tax, User $user) {
         $this->post = $post;
         $this->tax = $tax;
         $this->user = $user;
     }
 
     public function index(Request $request) {
-        $items = $this->post->all('post', $request->all());
+        $items = $this->post->getData('post', $request->all());
         return view('manage.post.index', ['items' => $items]);
     }
 
     public function create() {
         canAccess('publish_posts');
 
-        $cats = $this->tax->all('cat', [
+        $cats = $this->tax->getData('cat', [
             'orderby' => 'name',
             'order' => 'asc',
             'per_page' => -1,
             'fields' => ['taxs.id', 'taxs.parent_id', 'td.name']]
         );
-        $tags = $this->tax->all('tag', [
+        $tags = $this->tax->getData('tag', [
             'orderby' => 'name',
             'order' => 'asc',
             'per_page' => -1,
@@ -44,7 +44,7 @@ class PostController extends Controller {
         );
         $users = null;
         if (cando('manage_posts')) {
-            $users = $this->user->all([
+            $users = $this->user->getData([
                 'orderby' => 'name',
                 'order' => 'asc',
                 'pre_page' => -1,
@@ -58,7 +58,7 @@ class PostController extends Controller {
         canAccess('publish_posts');
 
         try {
-            $this->post->insert($request->all(), 'post');
+            $this->post->insertData($request->all(), 'post');
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -74,13 +74,13 @@ class PostController extends Controller {
         if ($request->has('lang')) {
             $lang = $request->get('lang');
         }
-        $cats = $this->tax->all('cat', [
+        $cats = $this->tax->getData('cat', [
             'orderby' => 'name',
             'order' => 'asc',
             'per_page' => -1,
             'fields' => ['taxs.id', 'taxs.parent_id', 'td.name']
         ]);
-        $tags = $this->tax->all('tag', [
+        $tags = $this->tax->getData('tag', [
             'orderby' => 'name',
             'order' => 'asc',
             'per_page' => -1,
@@ -88,7 +88,7 @@ class PostController extends Controller {
         ]);
         $users = null;
         if (cando('manage_posts')) {
-            $users = $this->user->all([
+            $users = $this->user->getData([
                 'orderby' => 'name',
                 'order' => 'asc',
                 'per_page' => 20,
@@ -104,7 +104,7 @@ class PostController extends Controller {
     public function update($id, Request $request) {
         canAccess('edit_my_post', $this->post->get_author_id($id));
         try {
-            $this->post->update($id, $request->all());
+            $this->post->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -122,9 +122,14 @@ class PostController extends Controller {
 
     public function multiAction(Request $request) {
         if(!cando('remove_other_posts')){
-            return respons()->json(false);
+            return redirect()->back()->withInput()->with('error_mess', trans('auth.authorize'));
         }
-        return response()->json($this->post->actions($request));
+        try {
+            $this->post->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 
 }

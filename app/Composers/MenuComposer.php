@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Composers;
-use App\Eloquents\MenuEloquent;
+
 use Illuminate\Http\Request;
+use App\Models\Menu;
 use Option;
 
 class MenuComposer{
@@ -10,7 +11,7 @@ class MenuComposer{
     protected $menu;
     protected $request;
 
-    public function __construct(MenuEloquent $menu, Request $request) {
+    public function __construct(Menu $menu, Request $request) {
         $this->menu = $menu;
         $this->request = $request;
     }
@@ -18,7 +19,7 @@ class MenuComposer{
     public function compose($view){
         $group_id = Option::get('main_menu');
         $group_id = $group_id ? $group_id : 2;
-        $menus = $this->menu->all([
+        $menus = $this->menu->getData([
             'group_id' => $group_id,
             'per_page' => -1,
             'fields' => ['menus.id', 'menus.parent_id', 'menu_type', 'type_id', 'menus.icon', 'open_type', 'menus.order', 'md.title', 'md.slug', 'md.link']

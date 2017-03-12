@@ -218,7 +218,7 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Access' => App\Facades\Access\AccessFacade::class,
-        'Lang' => App\Facades\Lang\LangFacade::class,
+        'Local' => App\Facades\Lang\LocalFacade::class,
         'Option' => App\Facades\Option\OptionFacade::class,
         'Post' => App\Facades\Post\PostFacade::class,
         'Tax' => App\Facades\Tax\TaxFacade::class,

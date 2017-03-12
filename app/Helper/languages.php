@@ -1,9 +1,8 @@
 <?php
 
-
 // Languages
 function has_lang($code) {
-    return Lang::has($code);
+    return Local::has($code);
 }
 
 function switch_lang_url($locale) {
@@ -38,15 +37,15 @@ function lang_active($code, $active='active'){
 }
 
 function get_langs($args=['fields' => ['id', 'code', 'name', 'icon']]) {
-    return Lang::all($args);
+    return Local::all($args);
 }
 
 function current_lang() {
-    return Lang::getCurrent();
+    return Local::getCurrent();
 }
 
 function current_lang_id() {
-    return Lang::getCurrent()->id;
+    return Local::getCurrent()->id;
 }
 
 function current_locale() {
@@ -54,10 +53,10 @@ function current_locale() {
 }
 
 function get_lang_id($code){
-    return Lang::getId($code);
+    return Local::getId($code);
 }
 
 function get_lang($code, $fields=['*']){
-    return Lang::findById($code, $fields);
+    return Local::findById($code, $fields);
 }
 

@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
-use App\Eloquents\TaxEloquent;
+use App\Models\Tax;
 
 class TagController extends Controller
 {
     protected $tag;
 
-    public function __construct(TaxEloquent $tag) {
+    public function __construct(Tax $tag) {
         canAccess('manage_tags');
 
         $this->tag = $tag;
@@ -19,7 +19,7 @@ class TagController extends Controller
 
     public function index(Request $request) {
         $data = $request->all();
-        $tags = $this->tag->all('tag', $data);
+        $tags = $this->tag->getData('tag', $data);
         return view('manage.tag.index', ['items' => $tags]);
     }
 
@@ -29,7 +29,7 @@ class TagController extends Controller
 
     public function store(Request $request) {
         try {
-            $this->tag->insert($request->all(), 'tag');
+            $this->tag->insertData($request->all(), 'tag');
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -49,7 +49,7 @@ class TagController extends Controller
 
     public function update($id, Request $request) {
         try {
-            $this->tag->update($id, $request->all());
+            $this->tag->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -64,6 +64,11 @@ class TagController extends Controller
     }
 
     public function multiAction(Request $request) {
-        return response()->json($this->tag->actions($request));
+        try {
+            $this->tag->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }

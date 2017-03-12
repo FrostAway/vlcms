@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Eloquents\PostTypeEloquent;
+use App\Models\PostType;
 
 class PageController extends Controller {
 
     protected $page;
 
-    public function __construct(PostTypeEloquent $page) {
+    public function __construct(PostType $page) {
         $this->page = $page;
     }
 
     public function lists(Request $request) {
-        $pages = $this->page->all('page', $request->all());
+        $pages = $this->page->getData('page', $request->all());
         return view('front.page_lists', compact('pages'));
     }
 

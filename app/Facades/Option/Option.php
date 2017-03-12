@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Facades\Option;
+
+use App\Models\Option as OptionModel;
 use DB;
 
 class Option{
     protected $option;
     
-    public function __construct(\App\Models\Option $option) {
+    public function __construct(OptionModel $option) {
         $this->option = $option;
     }
     

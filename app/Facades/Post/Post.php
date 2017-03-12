@@ -2,17 +2,17 @@
 
 namespace App\Facades\Post;
 
-use App\Eloquents\PostTypeEloquent;
+use App\Models\PostType;
 
 class Post{
     protected $post;
     
-    public function __construct(PostTypeEloquent $post) {
+    public function __construct(PostType $post) {
         $this->post = $post;
     }
     
     public function query($type='post', $args = []){
-        return $this->post->all($type, $args);
+        return $this->post->getData($type, $args);
     }
 }
 

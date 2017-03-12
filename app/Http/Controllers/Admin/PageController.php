@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-use App\Eloquents\PostTypeEloquent;
+use App\Models\PostType;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\DbException;
 use File;
@@ -15,7 +15,7 @@ class PageController extends Controller
     protected $page;
     protected $templates = [];
 
-    public function __construct(PostTypeEloquent $page) {
+    public function __construct(PostType $page) {
         $this->page = $page;
         $this->templates = ['' => trans('manage.selection')];
         
@@ -28,7 +28,7 @@ class PageController extends Controller
     }
 
     public function index(Request $request) {
-        $items = $this->page->all('page', $request->all());
+        $items = $this->page->getData('page', $request->all());
         return view('manage.page.index', ['items' => $items]);
     }
 
@@ -42,7 +42,7 @@ class PageController extends Controller
         canAccess('publish_posts');
 
         try {
-            $this->page->insert($request->all(), 'page');
+            $this->page->insertData($request->all(), 'page');
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -65,7 +65,7 @@ class PageController extends Controller
 
     public function update($id, Request $request) {
         try {
-            $this->page->update($id, $request->all());
+            $this->page->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -81,8 +81,13 @@ class PageController extends Controller
 
     public function multiAction(Request $request) {
         if(!cando('remove_other_posts')){
-            return respons()->json(false);
+            return redirect()->back()->withInput()->with('error_mess', trans('auth.authorize'));
         }
-        return response()->json($this->page->actions($request));
+        try {
+            $this->page->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }

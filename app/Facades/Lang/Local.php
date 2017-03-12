@@ -2,17 +2,17 @@
 
 namespace App\Facades\Lang;
 
-use App\Eloquents\LangEloquent;
+use App\Models\Lang;
 
-class Lang{
+class Local{
     protected $lang;
     
-    public function __construct(LangEloquent $lang) {
+    public function __construct(Lang $lang) {
         $this->lang = $lang;
     }
     
     public function all($args=[]){
-        return $this->lang->all($args);
+        return $this->lang->getData($args);
     }
     
     public function getCurrent($fields=['*']){
@@ -24,7 +24,7 @@ class Lang{
     }
     
     public function findByCode($code, $fields=['*']){
-        return $this->lang->get_lang($code, $fields);
+        return $this->lang->findByCode($code, $fields);
     }
     
     public function has($code){

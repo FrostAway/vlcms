@@ -4,24 +4,22 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Eloquents\LangEloquent;
-
-use Illuminate\Validation\ValidationException;
+use App\Models\Lang;
+use Exception;
 
 class LangController extends Controller
 {
     protected $lang;
     
-    public function __construct(LangEloquent $lang) {
+    public function __construct(Lang $lang) {
         canAccess('manage_langs');
         
         $this->lang = $lang;
     }
     
     public function index(Request $request){
-        $langs = $this->lang->all($request->all());
+        $langs = $this->lang->getData($request->all());
         return view('manage.lang.index', ['items' => $langs]);
     }
     
@@ -31,10 +29,10 @@ class LangController extends Controller
     
     public function store(Request $request){
         try{
-            $this->lang->insert($request->all());
+            $this->lang->insertData($request->all());
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withInput()->withErrors($ex->validator);
+        } catch (Exception $ex) {
+            return redirect()->back()->withInput()->withErrors($this->lang->getError());
         }
     }
     
@@ -45,10 +43,10 @@ class LangController extends Controller
     
     public function update($id, Request $request){
         try{
-            $this->lang->update($id, $request->all());
+            $this->lang->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withInput()->withErrors($ex->validator);
+        } catch (Exception $ex) {
+            return redirect()->back()->withInput()->withErrors($this->lang->getError());
         }
     }
     
@@ -60,6 +58,11 @@ class LangController extends Controller
     }
     
     public function multiAction(Request $request){
-        return response()->json($this->lang->actions($request));
+        try {
+            $this->lang->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }

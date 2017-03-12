@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Eloquents\FileEloquent;
-use App\Eloquents\MediaEloquent;
+use App\Models\File as FileModel;
 
 class AjaxController extends Controller
 {
     protected $request;
     protected $file;
 
-    public function __construct(Request $request, FileEloquent $file) {
+    public function __construct(Request $request, FileModel $file) {
         $this->request = $request;
         $this->file = $file;
     }
@@ -21,7 +20,7 @@ class AjaxController extends Controller
         $result = '';
         switch ($action) {
             case 'load_files':
-                $files = $this->file->all($this->request->all());
+                $files = $this->file->getData($this->request->all());
                 if(!$files->isEmpty()){
                     foreach ($files as $file) {
                         $result .= '<li><a href="'.$file->getSrc('full').'" data-id="'.$file->id.'">';

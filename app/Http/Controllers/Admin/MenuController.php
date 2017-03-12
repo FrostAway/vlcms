@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
-use App\Eloquents\MenuEloquent;
-use App\Eloquents\TaxEloquent;
-use App\Eloquents\PostTypeEloquent;
+use App\Models\Menu;
+use App\Models\Tax;
+use App\Models\PostType;
 
 class MenuController extends Controller {
 
@@ -15,7 +15,7 @@ class MenuController extends Controller {
     protected $tax;
     protected $post;
 
-    public function __construct(MenuEloquent $menu, TaxEloquent $tax, PostTypeEloquent $post) {
+    public function __construct(Menu $menu, Tax $tax, PostType $post) {
         canAccess('manage_menus');
 
         $this->menu = $menu;
@@ -25,24 +25,24 @@ class MenuController extends Controller {
 
     public function index(Request $request) {
         $data = $request->all();
-        $menus = $this->menu->all($data);
+        $menus = $this->menu->getData($data);
         return view('manage.menu.index', ['items' => $menus]);
     }
 
     public function create() {
-        $parents = $this->menu->all(['orderby' => 'pivot_title']);
-        $groups = $this->tax->all('menucat', ['orderby' => 'pivot_name', 'fields' => ['id']]);
+        $parents = $this->menu->getData(['orderby' => 'pivot_title']);
+        $groups = $this->tax->getData('menucat', ['orderby' => 'pivot_name', 'fields' => ['id']]);
 
-        $cats = $this->tax->all('cat', ['orderby' => 'pivot_name', 'fields' => ['id']]);
-        $tags = $this->tax->all('tag', ['orderby' => 'pivot_name', 'fields' => ['id']]);
-        $posts = $this->post->all('post', ['orderby' => 'pivot_title', 'fields' => ['id']]);
-        $pages = $this->post->all('page', ['orderby' => 'pivot_title', 'fields' => ['id']]);
+        $cats = $this->tax->getData('cat', ['orderby' => 'pivot_name', 'fields' => ['id']]);
+        $tags = $this->tax->getData('tag', ['orderby' => 'pivot_name', 'fields' => ['id']]);
+        $posts = $this->post->getData('post', ['orderby' => 'pivot_title', 'fields' => ['id']]);
+        $pages = $this->post->getData('page', ['orderby' => 'pivot_title', 'fields' => ['id']]);
         return view('manage.menu.create', compact('parents', 'groups', 'cats', 'tags', 'posts', 'pages'));
     }
 
     public function store(Request $request) {
         try {
-            $this->menu->insert($request->all());
+            $this->menu->insertData($request->all());
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -58,7 +58,7 @@ class MenuController extends Controller {
 
     public function update($id, Request $request) {
         try {
-            $this->menu->update($id, $request->all());
+            $this->menu->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -66,7 +66,7 @@ class MenuController extends Controller {
     }
 
     public function destroy($id) {
-        if (!$this->menu->destroy($id)) {
+        if (!$this->menu->destroyData($id)) {
             return redirect()->back()->with('error_mess', trans('manage.no_item'));
         }
         return redirect()->back()->with('succ_mess', trans('manage.destroy_success'));
@@ -82,7 +82,12 @@ class MenuController extends Controller {
     }
 
     public function multiAction(Request $request) {
-        return response()->json($result = $this->menu->actions($request));
+        try {
+            $this->menu->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 
     public function getType(Request $request) {

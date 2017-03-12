@@ -6,11 +6,12 @@
 
 @section('options')
 <li class="{{isActive('lang.index', 1)}}"><a href="{{route('lang.index', ['status' => 1])}}">{{trans('manage.all')}}</a></li>
-<li class="{{isActive('lang.index', 0)}}"><a href="{{route('lang.index', ['status' => 0])}}">{{trans('manage.disable')}}</a></li>
+<li class="{{isActive('lang.index', 2)}}"><a href="{{route('lang.index', ['status' => 2])}}">{{trans('manage.disable')}}</a></li>
+<li class="{{isActive('lang.index', 0)}}"><a href="{{route('lang.index', ['status' => 0])}}">{{trans('manage.trash')}}</a></li>
 @stop
 
 @section('table_nav')
-@include('manage.parts.table_nav', ['action_btns' => ['create', 'destroy']])
+@include('manage.parts.table_nav', ['action_btns' => ['create', 'destroy', 'remove']])
 @stop
 
 @section('content')
@@ -21,7 +22,7 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
-                <th width="30"><input type="checkbox" name="massdel" class="checkall"/></th>
+                <th width="30"><input type="checkbox" name="massdel" class="check_all"/></th>
                 <th>ID {!! link_order('id') !!}</th>
                 <th>{{trans('manage.icon')}}</th>
                 <th>{{trans('manage.name')}} {!! link_order('name') !!}</th>
@@ -35,7 +36,7 @@
         <tbody>
             @foreach($items as $item)
             <tr>
-                <td><input type="checkbox" name="checked[]" class="checkitem" value="{{ $item->id }}" /></td>
+                <td><input type="checkbox" name="checked[]" class="check_item" value="{{ $item->id }}" /></td>
                 <td>{{ $item->id }}</td>
                 <td>{!! $item->icon() !!}</td>
                 <td>{{ $item->name }}</td>

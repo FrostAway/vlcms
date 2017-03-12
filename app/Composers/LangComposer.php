@@ -2,18 +2,18 @@
 
 namespace App\Composers;
 
-use App\Eloquents\LangEloquent;
+use App\Models\Lang;
 
 class LangComposer{
     
     protected $lang;
 
-    public function __construct(LangEloquent $lang) {
+    public function __construct(Lang $lang) {
         $this->lang = $lang;
     }
 
     public function compose($view){
-        $langs = $this->lang->all(['fields' => ['id', 'code', 'name']]);
+        $langs = $this->lang->getData(['fields' => ['id', 'code', 'name']]);
         $view->with('langs', $langs);
     }
     

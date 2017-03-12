@@ -143,19 +143,3 @@ Route::group(['prefix' => 'api', 'namespace' => 'Api'], function (){
 Route::any($manage.'/admin-ajax', ['as' => 'mn.ajax_url', 'uses' => 'Admin\AdminController@ajaxAction']);
 Route::any('/ajax-action', ['as' => 'ajax_action', 'uses' => 'AjaxController@action']);
 
-Route::get('/timer', function () {
-    $start_time = null;
-    if (Session::has('start-time')) {
-        $time = Session::get('start-time');
-        if ($time) {
-            $start_time = $time;
-        }
-    }
-    return view('timer.index', compact('start_time')); 
-});
-Route::get('/set-start-time', function () {
-    if (!Session::has('num-time') && Session::get('num-time') < 1) {
-        Session::set('start-time', time()); 
-        Session::set('num-time', 1);
-    }
-});

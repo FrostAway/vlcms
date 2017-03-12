@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Eloquents\TaxEloquent;
-use App\Eloquents\MediaEloquent;
-use App\Eloquents\PostTypeEloquent;
+use App\Models\Tax;
+use App\Models\Media;
+use App\Models\PostType;
 use Validator;
 use Mail;
 use Option;
@@ -17,9 +17,9 @@ class HomeController extends Controller {
     protected $post;
 
     public function __construct(
-            TaxEloquent $tax,
-            MediaEloquent $slide,
-            PostTypeEloquent $post
+            Tax $tax,
+            Media $slide,
+            PostType $post
     ) {
         $this->tax = $tax;
         $this->slide = $slide;

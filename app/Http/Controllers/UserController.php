@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Eloquents\UserEloquent;
+use App\User;
 use Illuminate\Validation\ValidationException;
 use Validator;
 
@@ -11,7 +11,7 @@ class UserController extends Controller {
 
     protected $user;
 
-    public function __construct(UserEloquent $user) {
+    public function __construct(User $user) {
         $this->user = $user;
     }
 
@@ -24,7 +24,7 @@ class UserController extends Controller {
         canAccess('edit_my_user');
         
         try {
-            $this->user->update($id, $request->all());
+            $this->user->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('auth.updated_profile'));
         } catch (ValidationException $e) {
             return redirect()->back()->withInput()->withErrors($e->validator);

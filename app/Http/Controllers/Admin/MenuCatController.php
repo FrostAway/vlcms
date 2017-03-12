@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Eloquents\MenuEloquent;
-use App\Eloquents\TaxEloquent;
+use App\Models\Menu;
+use App\Models\Tax;
 use Illuminate\Validation\ValidationException;
 
 class MenuCatController extends Controller {
@@ -13,7 +13,7 @@ class MenuCatController extends Controller {
     protected $tax;
     protected $menu;
 
-    public function __construct(TaxEloquent $tax, MenuEloquent $menu) {
+    public function __construct(Tax $tax, Menu $menu) {
         canAccess('manage_menus');
 
         $this->tax = $tax;
@@ -22,7 +22,7 @@ class MenuCatController extends Controller {
 
     public function index(Request $request) {
         $data = $request->all();
-        $menucats = $this->tax->all('menucat', $data);
+        $menucats = $this->tax->getData('menucat', $data);
         return view('manage.menucat.index', ['items' => $menucats]);
     }
 
@@ -32,7 +32,7 @@ class MenuCatController extends Controller {
 
     public function store(Request $request) {
         try {
-            $this->tax->insert($request->all(), 'menucat');
+            $this->tax->insertData($request->all(), 'menucat');
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -49,7 +49,7 @@ class MenuCatController extends Controller {
                 $item['group_id'] = $request->get('group_id');
                 $item['type_id'] = isset($item['id']) ? $item['id'] : 0;
                 $item['lang'] = $request->has('lang') ? $request->get('lang') : current_locale();
-                $this->menu->insert($item);
+                $this->menu->insertData($item);
             }
         }
         if($request->wantsJson() || $request->ajax()){
@@ -70,14 +70,14 @@ class MenuCatController extends Controller {
 
     public function update($id, Request $request) {     
         try {
-            $this->tax->update($id, $request->all());
+            $this->tax->updateData($id, $request->all());
             
             $menus = $request->get('menus');
             if($menus){
                 foreach ($menus as $menu_id => $menu){
                     $menu = (array) $menu;
                     $menu['lang'] = $request->get('lang');
-                    $this->menu->update($menu_id, $menu);
+                    $this->menu->updateData($menu_id, $menu);
                 }
             }
             
@@ -105,18 +105,23 @@ class MenuCatController extends Controller {
     }
     
     public function destroy($id) {
-        if (!$this->tax->destroy($id)) {
+        if (!$this->tax->destroyData($id)) {
             return redirect()->back()->with('error_mess', trans('manage.no_item'));
         }
         return redirect()->back()->with('succ_mess', trans('manage.destroy_success'));
     }
 
     public function multiAction(Request $request) {
-        return response()->json($this->tax->actions($request));
+        try {
+            $this->tax->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 
     public function getNestedMenus(Request $request) {
-        $menus = $this->menu->all($request->all());
+        $menus = $this->menu->getData($request->all());
         $nested = $this->tax->toNested($menus);
         return $nested;
     }

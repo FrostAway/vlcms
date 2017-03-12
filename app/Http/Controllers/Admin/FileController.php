@@ -4,17 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Eloquents\FileEloquent;
+use App\Models\File as FileModel;
 use Illuminate\Validation\ValidationException;
-use DB;
-use App\Eloquents\UserEloquent;
+use App\User;
 
 class FileController extends Controller {
 
     protected $file;
     protected $user;
 
-    public function __construct(FileEloquent $file, UserEloquent $user) {
+    public function __construct(FileModel $file, User $user) {
 
         $this->file = $file;
         $this->user = $user;
@@ -23,7 +22,7 @@ class FileController extends Controller {
     public function index(Request $request) {
         canAccess('read_files');
         
-        $files = $this->file->all($request->all());
+        $files = $this->file->getData($request->all());
         if($request->wantsJson() || $request->ajax()){
             return response()->json($files);
         }
@@ -46,7 +45,11 @@ class FileController extends Controller {
         if($request->has('size')){
             $size = $request->get('size');
         }
-        return $this->file->getImage($id, $size);
+        $file = $this->file->find($id);
+        if ($file) {
+            return $file->getImage($size);
+        }
+        return null;
     }
 
     public function create() {
@@ -70,7 +73,7 @@ class FileController extends Controller {
 
         foreach ($files as $file) {
             try {
-                $newfile = $this->file->insert($file);
+                $newfile = $this->file->insertData($file);
                 $newfile->thumb_url = $newfile->getSrc('thumbnail');
                 $newfile->full_url = $newfile->getSrc('full');
                 array_push($results, $newfile);
@@ -93,7 +96,7 @@ class FileController extends Controller {
         $item = $this->file->find($id);
         $users = null;
         if(cando('manage_files')){
-            $users = $this->user->all()->lists('name', 'id')->toArray();
+            $users = $this->user->getData()->lists('name', 'id')->toArray();
         }
         return view('manage.file.edit', compact('item', 'users'));
     }
@@ -102,7 +105,7 @@ class FileController extends Controller {
         canAccess('edit_my_file', $this->file->get_author_id($id));
         
         try {
-            $this->file->update($id, $request->all());
+            $this->file->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -112,14 +115,19 @@ class FileController extends Controller {
     public function destroy($id) {
         canAccess('remove_my_file', $this->file->get_author_id($id));
         
-        if (!$this->file->destroy($id)) {
+        if (!$this->file->destroyData($id)) {
             return redirect()->back()->with('error_mess', trans('manage.no_item'));
         }
         return redirect()->back()->with('succ_mess', trans('manage.destroy_success'));
     }
 
     public function multiAction(Request $request) {
-        return response()->json($this->file->actions($request));
+        try {
+            $this->file->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 
 }

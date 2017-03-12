@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
-use App\Eloquents\TaxEloquent;
+use App\Models\Tax;
 
 class AlbumController extends Controller
 {
     protected $album;
 
-    public function __construct(TaxEloquent $album) {
+    public function __construct(Tax $album) {
         canAccess('manage_cats');
 
         $this->album = $album;
@@ -19,7 +19,7 @@ class AlbumController extends Controller
 
     public function index(Request $request) {
         $data = $request->all();
-        $albums = $this->album->all('album', $data);
+        $albums = $this->album->getData('album', $data);
         return view('manage.album.index', ['items' => $albums]);
     }
 
@@ -29,7 +29,7 @@ class AlbumController extends Controller
 
     public function store(Request $request) {
         try {
-            $this->album->insert($request->all(), 'album');
+            $this->album->insertData($request->all(), 'album');
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -49,7 +49,7 @@ class AlbumController extends Controller
 
     public function update($id, Request $request) {
         try {
-            $this->album->update($id, $request->all());
+            $this->album->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -64,6 +64,11 @@ class AlbumController extends Controller
     }
 
     public function multiAction(Request $request) {
-        return response()->json($this->album->actions($request));
+        try {
+            $this->album->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }

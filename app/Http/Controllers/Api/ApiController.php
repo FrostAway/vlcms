@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Eloquents\PostTypeEloquent;
-use App\Eloquents\TaxEloquent;
-use App\Eloquents\FileEloquent;
+use App\Models\PostType;
+use App\Models\Tax;
+use App\Models\File as FileModel;
 
 class ApiController extends Controller
 {
@@ -17,10 +17,10 @@ class ApiController extends Controller
     protected $request;
 
     public function __construct(
-            PostTypeEloquent $post, 
-            PostTypeEloquent $page, 
-            TaxEloquent $cat, 
-            FileEloquent $file, 
+            PostType $post, 
+            PostType $page, 
+            Tax $cat, 
+            FileModel $file, 
             Request $request
     ) {
         $this->post = $post;
@@ -31,17 +31,17 @@ class ApiController extends Controller
     }
 
     public function getPosts() {
-        $posts = $this->post->all('post', $this->request->all());
+        $posts = $this->post->getData('post', $this->request->all());
         return response()->json($posts);
     }
 
     public function getPages() {
-        $pages = $this->page->all('page', $this->request->all());
+        $pages = $this->page->getData('page', $this->request->all());
         return response()->json($pages);
     }
 
     public function getCats() {
-        $cats = $this->cat->all('cat', $this->request->all());
+        $cats = $this->cat->getData('cat', $this->request->all());
         return response()->json($cats);
     }
 
@@ -50,7 +50,7 @@ class ApiController extends Controller
             return response()->json([], 402);
         }
         
-        $files = $this->file->all($this->request->all());
+        $files = $this->file->getData($this->request->all());
         return response()->json($files);
     }
 }

@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Eloquents\TaxEloquent;
-use App\Eloquents\PostTypeEloquent;
+use App\Models\Tax;
+use App\Models\PostType;
 
 class CatController extends Controller
 {
     protected $cat;
     protected $post;
     
-    public function __construct(TaxEloquent $cat, PostTypeEloquent $post) {
+    public function __construct(Tax $cat, PostType $post) {
         $this->cat = $cat;
         $this->post = $post;
     }
     
     public function view($id, $slug=null){
         $cat = $this->cat->findByLang($id, ['td.name', 'td.slug', 'taxs.id']);
-        $posts = $this->post->all('post', [
+        $posts = $this->post->getData('post', [
             'field' => ['posts.*', 'pd.*'],
             'orderby' => 'created_at',
             'order' => 'desc',

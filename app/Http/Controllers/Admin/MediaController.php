@@ -6,30 +6,30 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
-use App\Eloquents\UserEloquent;
-use App\Eloquents\TaxEloquent;
-use App\Eloquents\MediaEloquent;
+use App\User;
+use App\Models\Tax;
+use App\Models\Media;
 
 class MediaController extends Controller
 {
     protected $media;
     protected $user;
 
-    public function __construct(MediaEloquent $media, TaxEloquent $album, UserEloquent $user) {
+    public function __construct(Media $media, Tax $album, User $user) {
         $this->media = $media;
         $this->album = $album;
         $this->user = $user;
     }
 
     public function index(Request $request) {
-        $items = $this->media->all($request->all());
+        $items = $this->media->getData($request->all());
         return view('manage.media.index', ['items' => $items]);
     }
 
     public function create() {
         canAccess('publish_posts');
 
-        $albums = $this->album->all('album', [
+        $albums = $this->album->getData('album', [
             'orderby' => 'name',
             'order' => 'asc',
             'per_page' => -1,
@@ -37,7 +37,7 @@ class MediaController extends Controller
         );
         $users = null;
         if (cando('manage_posts')) {
-            $users = $this->user->all([
+            $users = $this->user->getData([
                 'orderby' => 'name',
                 'order' => 'asc',
                 'pre_page' => -1,
@@ -49,9 +49,9 @@ class MediaController extends Controller
 
     public function store(Request $request) {
         canAccess('publish_posts');
-
+        
         try {
-            $this->media->insert($request->all());
+            $this->media->insertData($request->all());
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -67,7 +67,7 @@ class MediaController extends Controller
         if ($request->has('lang')) {
             $lang = $request->get('lang');
         }
-        $albums = $this->album->all('album', [
+        $albums = $this->album->getData('album', [
             'orderby' => 'name',
             'order' => 'asc',
             'per_page' => -1,
@@ -75,7 +75,7 @@ class MediaController extends Controller
         ]);
         $users = null;
         if (cando('manage_posts')) {
-            $users = $this->user->all([
+            $users = $this->user->getData([
                 'orderby' => 'name',
                 'order' => 'asc',
                 'per_page' => 20,
@@ -90,7 +90,7 @@ class MediaController extends Controller
     public function update($id, Request $request) {
         canAccess('edit_my_post', $this->media->get_author_id($id));
         try {
-            $this->media->update($id, $request->all());
+            $this->media->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -106,9 +106,11 @@ class MediaController extends Controller
     }
 
     public function multiAction(Request $request) {
-        if(!cando('remove_other_posts')){
-            return respons()->json(false);
+        try {
+            $this->media->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
         }
-        return response()->json($this->media->actions($request));
     }
 }

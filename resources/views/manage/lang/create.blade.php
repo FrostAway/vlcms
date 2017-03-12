@@ -44,7 +44,7 @@
         
         <div class="form-group">
             <label>{{trans('manage.status')}}</label>
-            {!! Form::select('status', [1 => 'Active', 0 => 'Disable'], old('status'), ['class' => 'form-control']) !!}
+            {!! Form::select('status', [1 => 'Active', 2 => 'Disable'], old('status'), ['class' => 'form-control']) !!}
         </div>
         
         <div class="form-group">

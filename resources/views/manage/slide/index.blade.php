@@ -18,9 +18,13 @@ $page_title = ($slider) ? $slider->name. ' / '. trans('manage.man_slides') : tra
                 <i class="fa fa-plus"></i> <span class="">{{trans('manage.create')}}</span>
             </a>
 
-            <a href="{{route('slide.m_action', ['slider_id' => $slider_id])}}" action="remove" class="m_action_btn remove-btn btn btn-sm btn-danger m-b-1" data-toggle="tooltip" title="{{trans('manage.remove')}}" data-placement="top">
+            {!! Form::open(['method' => 'post', 'route' => ['slide.m_action', $slider_id], 'class' => 'inline']) !!}
+            <input type="hidden" name="action" value="remove">
+            <button type="submit" class="m_action_btn remove-btn btn btn-sm btn-danger m-b-1" data-toggle="tooltip" title="{{trans('manage.remove')}}" data-placement="top">
                 <i class="fa fa-close"></i> <span class="">{{trans('manage.remove')}}</span>
-            </a>
+            </button>
+            <div class="checked_ids"></div>
+            {!! Form::close() !!}
         </div>
     </div>
     <div class="pull-right m-b-1">

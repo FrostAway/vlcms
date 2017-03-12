@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
-use App\Eloquents\MediaEloquent;
-use App\Eloquents\TaxEloquent;
+use App\Models\Media;
+use App\Models\Tax;
 
 class SlideController extends Controller
 {
     protected $slide;
     protected $slider;
 
-    public function __construct(MediaEloquent $slide, TaxEloquent $slider) {
+    public function __construct(Media $slide, Tax $slider) {
         canAccess('manage_cats');
         
         $this->slide = $slide;
@@ -24,7 +24,7 @@ class SlideController extends Controller
         $data = $request->all();
         $data['slider_id'] = $slider_id;
         $slider = $this->slider->findByLang($slider_id);
-        $items = $this->slide->all($data);
+        $items = $this->slide->getData($data);
         return view('manage.slide.index', compact('items', 'slider_id', 'slider'));
     }
 
@@ -35,7 +35,7 @@ class SlideController extends Controller
     public function store(Request $request) {
         
         try {
-            $this->slide->insert($request->all(), 'slide'); 
+            $this->slide->insertData($request->all(), 'slide'); 
             return redirect()->back()->with('succ_mess', trans('manage.store_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -55,7 +55,7 @@ class SlideController extends Controller
 
     public function update($id, Request $request) {
         try {
-            $this->slide->update($id, $request->all());
+            $this->slide->updateData($id, $request->all());
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
         } catch (ValidationException $ex) {
             return redirect()->back()->withInput()->withErrors($ex->validator);
@@ -70,6 +70,11 @@ class SlideController extends Controller
     }
 
     public function multiAction(Request $request) {
-        return response()->json($this->slide->actions($request));
+        try {
+            $this->slide->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }

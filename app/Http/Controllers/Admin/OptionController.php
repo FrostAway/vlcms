@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-use App\Eloquents\OptionEloquent;
-use App\Eloquents\FileEloquent;
+use App\Models\Option;
+use App\Models\File;
 use Illuminate\Validation\ValidationException;
 
 class OptionController extends Controller
@@ -14,7 +14,7 @@ class OptionController extends Controller
     protected $option;
     protected $file;
 
-    public function __construct(OptionEloquent $option, FileEloquent $file) {
+    public function __construct(Option $option, File $file) {
         canAccess('manage_options');
         
         $this->option = $option;
@@ -22,7 +22,7 @@ class OptionController extends Controller
     }
     
     public function index(Request $request){
-        $options = $this->option->all($request->all());
+        $options = $this->option->getData($request->all());
         return view('manage.option.index', ['items' => $options]);
     }
     
@@ -41,8 +41,9 @@ class OptionController extends Controller
             }
             $this->option->updateItem($request->input('key'), $value, $request->input('lang_code'));
             return redirect()->back()->with('succ_mess', trans('manage.update_success'));
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withInput()->withErrors($ex->validator);
+        } catch (\Exception $ex) {
+            dd($ex);
+            return redirect()->back()->withInput()->withErrors($this->file->getError());
         }
     }
     
@@ -52,13 +53,18 @@ class OptionController extends Controller
     }
     
     public function destroy($id){
-        if(!$this->option->destroy($id)){
+        if(!$this->option->destroyData($id)){
             return redirect()->back()->with('error_mess', trans('manage.no_item'));
         }
         return redirect()->back()->with('succ_mess', trans('manage.destroy_success'));
     }
     
     public function multiAction(Request $request){
-        return response()->json($this->option->actions($request));
+        try {
+            $this->option->actions($request);
+            return redirect()->back()->withInput()->with('succ_mess', trans('message.action_success'));
+        } catch (\Exception $ex) {
+            return redirect()->back()->withInput()->with('error_mess', $ex->getMessage());
+        }
     }
 }
